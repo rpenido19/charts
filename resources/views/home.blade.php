@@ -1,5 +1,8 @@
 @extends('layouts.default')
 
+@section('styles')
+@endsection
+
 @section('content')
     <div class="row p-3 d-flex justify-content-center">
         <div class="card col-12 col-md-8">
@@ -12,8 +15,8 @@
             <div class="collapse" id="collapseFilter">
                 <form class="mt-3">
                     <div class="form-group">
-                        <label>Nome</label>
-                        <select class="custom-select" id="name">
+                        <label for="id">Nome</label>
+                        <select multiple class="custom-select" id="id">
                             <option value="" selected>Selecione</option>
                             @foreach(\App\Fundo::select(['id', 'name'])->get() as $i)
                             <option value="{{$i->id}}">{{$i->name}}</option>
@@ -23,11 +26,11 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="form-group col-12 col-md-6">
-                                <label>Data Inicial</label>
+                                <label for="dth_inical">Data Inicial</label>
                                 <input type="date" class="form-control" id="dth_inical">
                             </div>
                             <div class="form-group col-12 col-md-6">
-                                <label>Data Final</label>
+                                <label for="dth_final">Data Final</label>
                                 <input type="date" class="form-control" id="dth_final">
                             </div>
                         </div>
@@ -35,11 +38,11 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="form-group col-12 col-md-6">
-                                <label>Valor Mínmo</label>
+                                <label for="min_value">Valor Mínmo</label>
                                 <input type="number" step="2" class="form-control" id="min_value" placeholder="R$ 00,00">
                             </div>
                             <div class="form-group col-12 col-md-6">
-                                <label>Valor Máximo</label>
+                                <label for="max_value">Valor Máximo</label>
                                 <input type="number" step="2" class="form-control" id="max_value" placeholder="R$ 00,00">
                             </div>
                         </div>
