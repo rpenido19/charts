@@ -14,3 +14,5 @@
 Route::get('/', function () {
     return view('home');
 });
+
+Route::post('/get_data', 'HomeController@get_data')->name('get_data');

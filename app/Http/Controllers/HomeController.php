@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Fundo;
+use App\Patrimonio;
+use DB;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -11,74 +14,33 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function get_data(Request $request)
     {
-        //
-    }
+        $query = Fundo::select('fundos.name', DB::raw('group_concat(patrimonios.value) as dados'))
+        ->leftJoin('patrimonios', 'fundos.id', '=', 'patrimonios.fundo_id')
+        ->groupBy('fundos.name')
+        ->orderBy('patrimonios.date');
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        $query->when(!is_null($request->id), function($e) use ($request){
+            $e->whereIn('fundos.id', $request->id);
+        });
+        $query->when(!empty($request->dth_inical), function($e) use ($request){
+            $e->where('patrimonios.date', '>=', $request->dth_inical);
+        });
+        $query->when(!empty($request->dth_final), function($e) use ($request){
+            $e->where('patrimonios.date', '<=', $request->dth_final);
+        });
+        $query->when(!empty($request->min_value), function($e) use ($request){
+            $e->where('patrimonios.value', '>=', $request->min_value);
+        });
+        $query->when(!empty($request->max_value), function($e) use ($request){
+            $e->where('patrimonios.value', '<=', $request->max_value);
+        });
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $result = $query->get();
+        foreach($result as $i=>$values) {
+            $arr[$i] = ['name' => $values->name, 'data' => $values->dados];
+        }
+        return response()->json($arr);
     }
 }
